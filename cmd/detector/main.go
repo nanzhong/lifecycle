@@ -9,6 +9,7 @@ import (
 	"github.com/buildpack/packs"
 
 	"github.com/buildpack/lifecycle"
+	"fmt"
 )
 
 var (
@@ -46,10 +47,12 @@ func detect() error {
 		return packs.FailErr(err, "read buildpack order file")
 	}
 
+	fmt.Printf("detecting")
 	info, group := order.Detect(logger, lifecycle.DefaultAppDir)
 	if group == nil {
 		return packs.FailCode(packs.CodeFailedDetect, "detect")
 	}
+	fmt.Printf("group: %+v\n", group)
 
 	if err := group.Write(groupPath); err != nil {
 		return packs.FailErr(err, "write buildpack group")
