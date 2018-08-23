@@ -47,9 +47,10 @@ func detect() error {
 		return packs.FailErr(err, "read buildpack order file")
 	}
 
-	fmt.Printf("detecting")
+	fmt.Printf("detecting\n")
 	info, group := order.Detect(logger, lifecycle.DefaultAppDir)
 	if group == nil {
+		fmt.Printf("info: %+v\n", info)
 		return packs.FailCode(packs.CodeFailedDetect, "detect")
 	}
 	fmt.Printf("group: %+v\n", group)

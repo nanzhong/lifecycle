@@ -152,8 +152,12 @@ func mergeTOML(l *log.Logger, out io.Writer, in ...io.Reader) {
 type BuildpackOrder []BuildpackGroup
 
 func (bo BuildpackOrder) Detect(l *log.Logger, appDir string) ([]byte, *BuildpackGroup) {
+	fmt.Printf("Detect.bo: %+v\n", bo)
 	for i := range bo {
+		fmt.Printf("Detect.i: %+v\n", i)
 		if info, group, ok := bo[i].Detect(l, appDir); ok {
+			fmt.Printf("Detect.info: %+v\n", info)
+			fmt.Printf("Detect.group: %+v\n", group)
 			return info, group
 		}
 	}
