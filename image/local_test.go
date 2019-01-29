@@ -49,7 +49,7 @@ func testLocal(t *testing.T, when spec.G, it spec.S) {
 		factory = image.Factory{
 			Docker: dockerCli,
 			FS:     &fs.FS{},
-			Out:    os.Stdout,
+			Out:    ioutil.Discard,
 		}
 		repoName = "pack-image-test-" + h.RandString(10)
 	})

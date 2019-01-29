@@ -412,7 +412,7 @@ func (l *local) prevDownload() error {
 	return outerErr
 }
 
-func pullImage(outputFile *os.File, dockerCli *dockerclient.Client, ref string) error {
+func pullImage(output io.Writer, dockerCli *dockerclient.Client, ref string) error {
 	regAuth, err := registryAuth(ref)
 	if err != nil {
 		return errors.Wrap(err, "auth for docker pull")
@@ -431,8 +431,8 @@ func pullImage(outputFile *os.File, dockerCli *dockerclient.Client, ref string) 
 		}
 	}
 
-	termFd, isTerm := term.GetFdInfo(outputFile)
-	err = jsonmessage.DisplayJSONMessagesStream(rc, outputFile, termFd, isTerm, nil)
+	termFd, isTerm := term.GetFdInfo(output)
+	err = jsonmessage.DisplayJSONMessagesStream(rc, output, termFd, isTerm, nil)
 	if err != nil {
 		return err
 	}

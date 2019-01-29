@@ -60,7 +60,7 @@ func analyzer() error {
 
 	var err error
 	var previousImage image.Image
-	factory, err := image.DefaultFactory(os.Stdout)
+	factory, err := image.NewFactory()
 	if err != nil {
 		return err
 	}

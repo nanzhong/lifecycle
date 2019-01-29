@@ -1,7 +1,8 @@
 package image
 
 import (
-	"os"
+	"io"
+	"io/ioutil"
 
 	"github.com/docker/docker/client"
 	"github.com/pkg/errors"
@@ -12,12 +13,13 @@ import (
 type Factory struct {
 	Docker *client.Client
 	FS     *fs.FS
-	Out    *os.File
+	Out    io.Writer
 }
 
-func DefaultFactory(outputFile *os.File) (*Factory, error) {
+func NewFactory(ops ...func(*Factory)) (*Factory, error) {
 	f := &Factory{
-		FS: &fs.FS{},
+		FS:  &fs.FS{},
+		Out: ioutil.Discard,
 	}
 
 	var err error
@@ -25,10 +27,17 @@ func DefaultFactory(outputFile *os.File) (*Factory, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	f.Out = outputFile
+	for _, op := range ops {
+		op(f)
+	}
 
 	return f, nil
+}
+
+func WithOutWriter(w io.Writer) func(factory *Factory) {
+	return func(factory *Factory) {
+		factory.Out = w
+	}
 }
 
 func newDocker() (*client.Client, error) {
