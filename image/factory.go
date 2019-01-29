@@ -1,6 +1,8 @@
 package image
 
 import (
+	"os"
+
 	"github.com/docker/docker/client"
 	"github.com/pkg/errors"
 
@@ -10,9 +12,10 @@ import (
 type Factory struct {
 	Docker *client.Client
 	FS     *fs.FS
+	Out    *os.File
 }
 
-func DefaultFactory() (*Factory, error) {
+func DefaultFactory(outputFile *os.File) (*Factory, error) {
 	f := &Factory{
 		FS: &fs.FS{},
 	}
@@ -22,6 +25,8 @@ func DefaultFactory() (*Factory, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	f.Out = outputFile
 
 	return f, nil
 }
