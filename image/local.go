@@ -21,6 +21,7 @@ import (
 	dockerclient "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/term"
+	"github.com/fatih/color"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/pkg/errors"
 
@@ -430,13 +431,25 @@ func (f *Factory) pullImage(output io.Writer, dockerCli *dockerclient.Client, re
 	}
 
 	termFd, isTerm := term.GetFdInfo(output)
-	err = jsonmessage.DisplayJSONMessagesStream(rc, output, termFd, isTerm, nil)
+	err = jsonmessage.DisplayJSONMessagesStream(rc, &myWriter{writer: output}, termFd, isTerm, nil)
 	if err != nil {
 		return err
 	}
 
 	return rc.Close()
 }
+
+///////////////////////////
+type myWriter struct {
+	writer io.Writer
+}
+
+func (w *myWriter) Write(p []byte) (n int, err error) {
+	newString := strings.Replace(string(p), "Downloading", color.YellowString("Downloading"), -1)
+	return w.writer.Write([]byte("[DOCKER]: " + newString))
+}
+
+/////////////////////////////
 
 func (f *Factory) registryAuth(ref string) (string, error) {
 	var regAuth string
