@@ -337,6 +337,7 @@ func (l *local) prevDownload() error {
 	var outerErr error
 	l.prevOnce.Do(func() {
 		ctx := context.Background()
+		fmt.Printf("Download image: '%s' start time: '%v'", l.RepoName, time.Now())
 
 		tarFile, err := l.Docker.ImageSave(ctx, []string{l.RepoName})
 		if err != nil {
@@ -353,9 +354,11 @@ func (l *local) prevDownload() error {
 
 		err = l.FS.Untar(tarFile, l.prevDir)
 		if err != nil {
+			fmt.Printf("Failed to decompress, time: %v", time.Now())
 			outerErr = errors.Wrap(err, "decompress tar file")
 			return
 		}
+		fmt.Printf("Untar was successfull, time: %v", time.Now())
 
 		mf, err := os.Open(filepath.Join(l.prevDir, "manifest.json"))
 		if err != nil {

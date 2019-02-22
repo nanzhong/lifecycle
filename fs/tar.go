@@ -133,6 +133,7 @@ func (*FS) AddFileToTar(tw *tar.Writer, name string, contents *os.File) error {
 
 func (*FS) Untar(r io.Reader, dest string) error {
 	tr := tar.NewReader(r)
+	fmt.Printf("Starting to decompress tar to '%s'", dest)
 	for {
 		hdr, err := tr.Next()
 		if err == io.EOF {
@@ -142,7 +143,7 @@ func (*FS) Untar(r io.Reader, dest string) error {
 		if err != nil {
 			return err
 		}
-
+		fmt.Printf("decompressing file: '%s'", hdr.Name)
 		path := filepath.Join(dest, hdr.Name)
 
 		switch hdr.Typeflag {
