@@ -344,7 +344,7 @@ func (l *local) prevDownload() error {
 			outerErr = errors.Wrap(err, "image save")
 			return
 		}
-		defer tarFile.Close()
+		//defer tarFile.Close()
 
 		l.prevDir, err = ioutil.TempDir("", "packs.local.reuse-layer.")
 		if err != nil {
