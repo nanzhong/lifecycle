@@ -143,7 +143,7 @@ func (l *local) Rebase(baseTopLayer string, newBase Image) error {
 
 	// SAVE CURRENT IMAGE TO DISK
 	if err := l.prevDownload(); err != nil {
-		return err
+		return errors.Wrap(err, "download previous image")
 	}
 
 	// READ MANIFEST.JSON
@@ -340,7 +340,7 @@ func (l *local) prevDownload() error {
 
 		tarFile, err := l.Docker.ImageSave(ctx, []string{l.RepoName})
 		if err != nil {
-			outerErr = err
+			outerErr = errors.Wrap(err, "image save")
 			return
 		}
 		defer tarFile.Close()
@@ -353,13 +353,13 @@ func (l *local) prevDownload() error {
 
 		err = l.FS.Untar(tarFile, l.prevDir)
 		if err != nil {
-			outerErr = err
+			outerErr = errors.Wrap(err, "decompress tar file")
 			return
 		}
 
 		mf, err := os.Open(filepath.Join(l.prevDir, "manifest.json"))
 		if err != nil {
-			outerErr = err
+			outerErr = errors.Wrap(err, "open manifest file")
 			return
 		}
 		defer mf.Close()
@@ -369,7 +369,7 @@ func (l *local) prevDownload() error {
 			Layers []string
 		}
 		if err := json.NewDecoder(mf).Decode(&manifest); err != nil {
-			outerErr = err
+			outerErr = errors.Wrap(err, "decode manifest")
 			return
 		}
 
@@ -380,7 +380,7 @@ func (l *local) prevDownload() error {
 
 		df, err := os.Open(filepath.Join(l.prevDir, manifest[0].Config))
 		if err != nil {
-			outerErr = err
+			outerErr = errors.Wrap(err, "open manifest configuration")
 			return
 		}
 		defer df.Close()
@@ -392,7 +392,7 @@ func (l *local) prevDownload() error {
 		}
 
 		if err = json.NewDecoder(df).Decode(&details); err != nil {
-			outerErr = err
+			outerErr = errors.Wrap(err, "decode manifest configuration details")
 			return
 		}
 
