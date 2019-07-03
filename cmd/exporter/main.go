@@ -90,7 +90,7 @@ func export() error {
 	outLog := log.New(os.Stdout, "", 0)
 	errLog := log.New(os.Stderr, "", 0)
 	exporter := &lifecycle.Exporter{
-		Buildpacks:   group.Buildpacks,
+		Buildpacks:   group.Group,
 		Out:          outLog,
 		Err:          errLog,
 		UID:          uid,

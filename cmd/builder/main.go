@@ -68,7 +68,7 @@ func build() error {
 		LayersDir:   layersDir,
 		AppDir:      appDir,
 		Env:         env,
-		Buildpacks:  group.Buildpacks,
+		Buildpacks:  group.Group,
 		Plan:        plan,
 		Out:         os.Stdout,
 		Err:         os.Stderr,

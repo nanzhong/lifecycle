@@ -146,7 +146,7 @@ func (e *Exporter) Export(
 }
 
 func (e *Exporter) addOrReuseLayer(image imgutil.Image, layer identifiableLayer, previousSha string) (string, error) {
-	tarPath := filepath.Join(e.ArtifactsDir, escapeIdentifier(layer.Identifier())+".tar")
+	tarPath := filepath.Join(e.ArtifactsDir, escapeID(layer.Identifier())+".tar")
 	sha, err := archive.WriteTarFile(layer.Path(), tarPath, e.UID, e.GID)
 	if err != nil {
 		return "", errors.Wrapf(err, "exporting layer '%s'", layer.Identifier())
