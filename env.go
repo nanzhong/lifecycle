@@ -54,6 +54,7 @@ func (p *Env) AddEnvDir(envDir string) error {
 		}
 		switch action {
 		case "append":
+			// TODO: "prepend"?
 			return p.Setenv(name, v+p.Getenv(name))
 		case "override":
 			return p.Setenv(name, v)
