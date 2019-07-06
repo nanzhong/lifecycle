@@ -13,7 +13,6 @@ import (
 	"github.com/buildpack/lifecycle"
 	"github.com/buildpack/lifecycle/cache"
 	"github.com/buildpack/lifecycle/cmd"
-	"github.com/buildpack/lifecycle/docker"
 )
 
 var (
@@ -71,7 +70,7 @@ func doCache() error {
 
 	var cacheStore lifecycle.Cache
 	if cacheImageTag != "" {
-		dockerClient, err := docker.DefaultClient()
+		dockerClient, err := cmd.DockerClient()
 		if err != nil {
 			return cmd.FailErr(err, "create docker client")
 		}

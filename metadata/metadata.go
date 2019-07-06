@@ -88,7 +88,9 @@ func GetAppMetadata(image imgutil.Image) (AppImageMetadata, error) {
 	}
 
 	meta := AppImageMetadata{}
-	_ = json.Unmarshal([]byte(contents), &meta)
+	if err := json.Unmarshal([]byte(contents), &meta); err != nil {
+		return AppImageMetadata{}, nil
+	}
 	return meta, nil
 }
 

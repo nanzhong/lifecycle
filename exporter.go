@@ -54,17 +54,17 @@ func (e *Exporter) Export(
 
 	meta.Stack = stack
 
-	meta.App.SHA, err = e.addOrReuseLayer(workingImage, &layer{path: appDir, identifier: "app"}, origMetadata.App.SHA)
+	meta.App.SHA, err = e.addLayer(workingImage, &layer{path: appDir, identifier: "app"}, origMetadata.App.SHA)
 	if err != nil {
 		return errors.Wrap(err, "exporting app layer")
 	}
 
-	meta.Config.SHA, err = e.addOrReuseLayer(workingImage, &layer{path: filepath.Join(layersDir, "config"), identifier: "config"}, origMetadata.Config.SHA)
+	meta.Config.SHA, err = e.addLayer(workingImage, &layer{path: filepath.Join(layersDir, "config"), identifier: "config"}, origMetadata.Config.SHA)
 	if err != nil {
 		return errors.Wrap(err, "exporting config layer")
 	}
 
-	meta.Launcher.SHA, err = e.addOrReuseLayer(workingImage, &layer{path: launcher, identifier: "launcher"}, origMetadata.Launcher.SHA)
+	meta.Launcher.SHA, err = e.addLayer(workingImage, &layer{path: launcher, identifier: "launcher"}, origMetadata.Launcher.SHA)
 	if err != nil {
 		return errors.Wrap(err, "exporting launcher layer")
 	}
@@ -84,7 +84,7 @@ func (e *Exporter) Export(
 
 			if layer.hasLocalContents() {
 				origLayerMetadata := origMetadata.MetadataForBuildpack(bp.ID).Layers[layer.name()]
-				lmd.SHA, err = e.addOrReuseLayer(workingImage, &layer, origLayerMetadata.SHA)
+				lmd.SHA, err = e.addLayer(workingImage, &layer, origLayerMetadata.SHA)
 				if err != nil {
 					return err
 				}
@@ -145,15 +145,15 @@ func (e *Exporter) Export(
 	return e.saveImage(workingImage, additionalNames)
 }
 
-func (e *Exporter) addOrReuseLayer(image imgutil.Image, layer identifiableLayer, previousSha string) (string, error) {
+func (e *Exporter) addLayer(image imgutil.Image, layer identifiableLayer, previousSHA string) (string, error) {
 	tarPath := filepath.Join(e.ArtifactsDir, escapeID(layer.Identifier())+".tar")
 	sha, err := archive.WriteTarFile(layer.Path(), tarPath, e.UID, e.GID)
 	if err != nil {
 		return "", errors.Wrapf(err, "exporting layer '%s'", layer.Identifier())
 	}
-	if sha == previousSha {
+	if sha == previousSHA {
 		e.Out.Printf("Reusing layer '%s' with SHA %s\n", layer.Identifier(), sha)
-		return sha, image.ReuseLayer(previousSha)
+		return sha, image.ReuseLayer(previousSHA)
 	}
 	e.Out.Printf("Exporting layer '%s' with SHA %s\n", layer.Identifier(), sha)
 	return sha, image.AddLayer(tarPath)
