@@ -1,6 +1,6 @@
 export GO111MODULE = on
 
-GOCMD=?go
+GOCMD=go
 GOENV=GOOS=linux GOARCH=amd64 CGO_ENABLED=0
 GOBUILD=$(GOCMD) build -mod=vendor
 GOTEST=$(GOCMD) test -mod=vendor
