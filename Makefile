@@ -1,5 +1,7 @@
-GOCMD?=go
-GOENV=GO111MODULE=on GOOS=linux GOARCH=amd64 CGO_ENABLED=0
+export GO111MODULE = on
+
+GOCMD=?go
+GOENV=GOOS=linux GOARCH=amd64 CGO_ENABLED=0
 GOBUILD=$(GOCMD) build -mod=vendor
 GOTEST=$(GOCMD) test -mod=vendor
 LIFECYCLE_VERSION?=dev
