@@ -230,7 +230,15 @@ func export() error {
 		},
 	}
 
-	if err := exporter.Export(layersDir, appDir, appImage, runImageID.String(), analyzedMD.Metadata, imageNames[1:], launcherConfig, stackMD); err != nil {
+	if err := exporter.Export(appImage, lifecycle.ExportOptions{
+		LayersDir:       layersDir,
+		AppDir:          appDir,
+		RunImageRef:     runImageID.String(),
+		OrigMetadata:    analyzedMD.Metadata,
+		AdditionalNames: imageNames[1:],
+		LauncherConfig:  launcherConfig,
+		Stack:           stackMD,
+	}); err != nil {
 		if _, isSaveError := err.(*imgutil.SaveError); isSaveError {
 			return cmd.FailErrCode(err, cmd.CodeFailedSave, "export")
 		}
