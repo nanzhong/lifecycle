@@ -9,7 +9,6 @@ import (
 )
 
 type Analyzer struct {
-	AnalyzedPath string
 	AppDir       string
 	Buildpacks   []Buildpack
 	GID, UID     int

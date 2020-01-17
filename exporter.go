@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/buildpacks/imgutil"
@@ -118,7 +119,7 @@ func (e *Exporter) Export(
 					return fmt.Errorf("cannot reuse '%s', previous image has no metadata for layer '%s'", layer.Identifier(), layer.Identifier())
 				}
 
-				e.Logger.Infof("Reusing layer '%s'\n", layer.Identifier())
+				e.Logger.Infof("Fast Reusing layer '%s'\n", layer.Identifier())
 				e.Logger.Debugf("Layer '%s' SHA: %s\n", layer.Identifier(), origLayerMetadata.SHA)
 				if err := workingImage.ReuseLayer(origLayerMetadata.SHA); err != nil {
 					return errors.Wrapf(err, "reusing layer: '%s'", layer.Identifier())
@@ -235,6 +236,10 @@ func (e *Exporter) Cache(layersDir string, cacheStore Cache) error {
 }
 
 func (e *Exporter) tarLayer(layer identifiableLayer) (string, string, error) {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("tarred layer in %s in %f s", layer.Identifier(), float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	tarPath := filepath.Join(e.ArtifactsDir, escapeID(layer.Identifier())+".tar")
 	if e.tarHashes == nil {
 		e.tarHashes = make(map[string]string)
@@ -253,12 +258,16 @@ func (e *Exporter) tarLayer(layer identifiableLayer) (string, string, error) {
 }
 
 func (e *Exporter) addOrReuseLayer(image imgutil.Image, layer identifiableLayer, previousSHA string) (string, error) {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("added or reused layer in %s in %f s", layer.Identifier(), float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	tarPath, sha, err := e.tarLayer(layer)
 	if err != nil {
 		return "", errors.Wrapf(err, "tarring layer '%s'", layer.Identifier())
 	}
 	if sha == previousSHA {
-		e.Logger.Infof("Reusing layer '%s'\n", layer.Identifier())
+		e.Logger.Infof("Slow Reusing layer '%s'\n", layer.Identifier())
 		e.Logger.Debugf("Layer '%s' SHA: %s\n", layer.Identifier(), sha)
 		return sha, image.ReuseLayer(previousSHA)
 	}

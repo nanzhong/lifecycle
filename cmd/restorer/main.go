@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"time"
 
 	"github.com/buildpacks/lifecycle"
 	"github.com/buildpacks/lifecycle/auth"
@@ -58,6 +59,10 @@ func main() {
 }
 
 func restore() error {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("restored in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	group, err := lifecycle.ReadGroup(groupPath)
 	if err != nil {
 		return cmd.FailErr(err, "read buildpack group")

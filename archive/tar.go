@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/buildpacks/lifecycle/cmd"
 )
 
 func WriteFilesToTar(dest string, uid, gid int, files ...string) (string, map[string]struct{}, error) {
@@ -89,6 +91,10 @@ func AddFileToArchive(tw *tar.Writer, srcDir string, uid, gid int, fileSet map[s
 }
 
 func WriteTarFile(sourceDir, dest string, uid, gid int) (string, error) {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("wrote tar in %s in %f s", dest, float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	hasher := sha256.New()
 	f, err := os.Create(dest)
 	if err != nil {

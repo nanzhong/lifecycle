@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/buildpacks/imgutil"
@@ -89,6 +90,10 @@ func main() {
 }
 
 func export() error {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("exported in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	group, err := lifecycle.ReadGroup(groupPath)
 	if err != nil {
 		return cmd.FailErr(err, "read buildpack group")
@@ -245,6 +250,10 @@ func export() error {
 }
 
 func exportCache(exporter *lifecycle.Exporter) error {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("cached in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	var err error
 	var cacheStore lifecycle.Cache
 	switch {

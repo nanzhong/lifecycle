@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/BurntSushi/toml"
 
@@ -49,6 +50,10 @@ func main() {
 }
 
 func build() error {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("built in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	group, err := lifecycle.ReadGroup(groupPath)
 	if err != nil {
 		return cmd.FailErr(err, "read buildpack group")

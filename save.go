@@ -2,6 +2,7 @@ package lifecycle
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/buildpacks/imgutil"
 	"github.com/buildpacks/imgutil/local"
@@ -10,6 +11,10 @@ import (
 )
 
 func saveImage(image imgutil.Image, additionalNames []string, logger Logger) error {
+	start := time.Now()
+	defer func() {
+		logger.Infof("saved image in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	var saveErr error
 	if err := image.Save(additionalNames...); err != nil {
 		var ok bool

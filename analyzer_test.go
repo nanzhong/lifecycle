@@ -61,7 +61,6 @@ func testAnalyzer(t *testing.T, when spec.G, it spec.S) {
 			Buildpacks:   []lifecycle.Buildpack{{ID: "metadata.buildpack"}, {ID: "no.cache.buildpack"}, {ID: "no.metadata.buildpack"}},
 			AppDir:       appDir,
 			LayersDir:    layerDir,
-			AnalyzedPath: filepath.Join(tmpDir, "some-previous-file.toml"),
 			Logger:       &log.Logger{Handler: &discard.Handler{}},
 			UID:          1234,
 			GID:          4321,

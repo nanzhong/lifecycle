@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/buildpacks/lifecycle"
 	"github.com/buildpacks/lifecycle/cmd"
@@ -50,6 +51,10 @@ func main() {
 }
 
 func detect() error {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("detected in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	order, err := lifecycle.ReadOrder(orderPath)
 	if err != nil {
 		return cmd.FailErr(err, "read buildpack order file")

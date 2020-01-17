@@ -261,6 +261,10 @@ func (i *Image) GetLayer(diffID string) (io.ReadCloser, error) {
 }
 
 func (i *Image) AddLayer(path string) error {
+	start := time.Now()
+	defer func() {
+		fmt.Printf("adding layer in local image in %f s\n", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	f, err := os.Open(path)
 	if err != nil {
 		return errors.Wrapf(err, "AddLayer: open layer: %s", path)
@@ -280,6 +284,11 @@ func (i *Image) AddLayer(path string) error {
 }
 
 func (i *Image) ReuseLayer(diffID string) error {
+	start := time.Now()
+	defer func() {
+		fmt.Printf("reusing layer in local image in %f s\n", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
+	
 	if len(i.easyAddLayers) > 0 && i.easyAddLayers[0] == diffID {
 		i.inspect.RootFS.Layers = append(i.inspect.RootFS.Layers, diffID)
 		i.layerPaths = append(i.layerPaths, "")

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/buildpacks/imgutil"
 	"github.com/buildpacks/imgutil/local"
@@ -81,6 +82,10 @@ func main() {
 }
 
 func analyzer() error {
+	start := time.Now()
+	defer func() {
+		cmd.Logger.Infof("analyzed in %f s", float64(time.Now().Sub(start).Milliseconds())/1000.0)
+	}()
 	if useHelpers {
 		if err := lifecycle.SetupCredHelpers(filepath.Join(os.Getenv("HOME"), ".docker"), imageName); err != nil {
 			return cmd.FailErr(err, "setup credential helpers")
@@ -96,7 +101,6 @@ func analyzer() error {
 		Buildpacks:   group.Group,
 		AppDir:       appDir,
 		LayersDir:    layersDir,
-		AnalyzedPath: analyzedPath,
 		Logger:       cmd.Logger,
 		UID:          uid,
 		GID:          gid,
